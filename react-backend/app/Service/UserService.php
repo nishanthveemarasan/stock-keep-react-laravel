@@ -1,0 +1,74 @@
+<?php
+
+namespace App\Service;
+
+use App\Repository\UserRepository;
+use Throwable;
+
+class UserService
+{
+    public $userRepository;
+
+    function __construct(UserRepository $userRepository)
+    {
+        $this->userRepository = $userRepository;
+    }
+    public function getUserCount()
+    {
+        try {
+            return $this->userRepository->getUserCount();
+        } catch (Throwable $e) {
+            return $e;
+        }
+    }
+
+    public function getLogs()
+    {
+        try {
+            return $this->userRepository->getLogs();
+        } catch (Throwable $e) {
+            return $e;
+        }
+    }
+
+    public function getUserLogs($id)
+    {
+
+        return $this->userRepository->getUserLogs($id);
+    }
+    public function getUser($id)
+    {
+
+        return $this->userRepository->getUser($id);
+    }
+    public function getUsers()
+    {
+
+        return $this->userRepository->getUsers();
+    }
+
+    public function editUserRole($data)
+    {
+        $editRole =  $this->userRepository->editUserRole($data['id'], $data['role']);
+        if ($editRole) {
+            return array('msg' => "User's Role has been changed Successfully!!!");
+        }
+    }
+    public function disableUser($data)
+    {
+        $status = '1';
+        if ($data['currentStatus'] == '1') {
+            $status = '0';
+        }
+        $disaleUSer =  $this->userRepository->disableUser($data['id'], $status);
+        if ($disaleUSer) {
+            if ($data['currentStatus'] == '1') {
+                return array('msg' => "User has been disabled Successfully!!!");
+            } elseif ($data['currentStatus'] == '0') {
+                return array('msg' => "User has been Enabled Successfully!!!");
+            }
+        }
+    }
+
+   
+}

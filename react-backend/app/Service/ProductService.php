@@ -51,11 +51,20 @@ class ProductService
 
     public function createProduct($data)
     {
-        try {
-            return $this->productRepository->createProduct($data);
-        } catch (Throwable $e) {
-            return $e;
+        // return $data;
+        $checkItemExists = $this->productRepository->doesProductExists($data['itemname']);
+        if ($checkItemExists) {
+            return array(
+                'type' => 'fail',
+                'msg' => 'Product already exists in the system!!'
+
+            );
         }
+        $ceateProduct =  $this->productRepository->createProduct($data);
+        return array(
+            'type' => 'success',
+            'msg' => 'Product has been added successfully!!!'
+        );
     }
 
 

@@ -42,7 +42,7 @@ const OrderList = (props) => {
                   change={(e) => props.quantityChangeHandler(e, index)}
                 />
               </div>
-              <div className="col-md-3">
+              <div className="col-md-2">
                 <span
                   className="badge badge-danger"
                   onClick={onRemoveListHandler.bind(null, index)}

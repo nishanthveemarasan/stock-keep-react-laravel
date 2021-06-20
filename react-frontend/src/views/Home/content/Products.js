@@ -10,10 +10,15 @@ import { productStoreAction } from "store";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 import Button from "react-bootstrap/Button";
 import API from "axios/axios";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import axios from "axios";
 import ExportExcel from "../ExportExcel";
 const Products = () => {
   const [rowNumber, setRowNumber] = useState("10");
   const [searchParam, setSearchParam] = useState("");
+  const [loadSpin, setLoadSpin] = useState({
+    spinner: false,
+  });
   const mapStateToProps = (state) => {
     return {
       tableData: state.productStore.chairs,
@@ -43,16 +48,64 @@ const Products = () => {
     const searchParam = event.target.value;
   };
 
-  const onPrintPageController = () => {
+  const onExportExcelHandler = () => {
+    setLoadSpin((prevState) => {
+      return {
+        ...prevState,
+        spinner: true,
+      };
+    });
+    axios({
+      url:
+        "http://relaxreact.test/react-backend/public/api/export-product-excel",
+      method: "GET",
+      responseType: "blob", // important
+    }).then((response) => {
+      setLoadSpin((prevState) => {
+        return {
+          ...prevState,
+          spinner: false,
+        };
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "Products.xlsx"); //or any other extension
+      document.body.appendChild(link);
+      link.click();
+    });
+  };
+  const onExportPDFHandler = () => {
+    setLoadSpin((prevState) => {
+      return {
+        ...prevState,
+        spinner: true,
+      };
+    });
+    axios({
+      url: "http://relaxreact.test/react-backend/public/api/export-product-pdf",
+      method: "GET",
+      responseType: "blob", // important
+    }).then((response) => {
+      setLoadSpin((prevState) => {
+        return {
+          ...prevState,
+          spinner: false,
+        };
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "Products.pdf"); //or any other extension
+      document.body.appendChild(link);
+      link.click();
+    });
+  };
+
+  const onPrintHandler = () => {
     window.print();
   };
-  const onExportExcelHandler = () => {
-    API.get("export-product-excel")
-      .then((response) => {
-        console.log(response.data);
-      })
-      .catch();
-  };
+  //http://relaxreact.test/react-backend/public/api/export-product-pdf
   return (
     <React.Fragment>
       <MainNavigation />
@@ -71,10 +124,24 @@ const Products = () => {
             these highlighted items are not available in the stocks at this
             moment
           </span>
-          <div className="m-3">
+          {/* <div className="m-3">
             <ExportExcel />
-          </div>
+          </div> */}
         </div>
+        <ButtonGroup aria-label="Basic example">
+          <Button variant="primary" onClick={onExportExcelHandler}>
+            Excel
+          </Button>
+          <Button variant="primary" onClick={onExportPDFHandler}>
+            PDF
+          </Button>
+          <Button variant="primary" onClick={onPrintHandler}>
+            Print
+          </Button>
+          {loadSpin.spinner && (
+            <CircularProgress color="light" className="ml-3" />
+          )}
+        </ButtonGroup>
 
         <div className="d-flex justify-content-md-between">
           <FormSelect

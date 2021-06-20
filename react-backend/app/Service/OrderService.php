@@ -67,4 +67,12 @@ class OrderService
             return array('msg' => 'success', 'order_id' => ($getLatestId['order_number'] + 1));
         }
     }
+
+    public function create($data)
+    {
+        $createOrder =   $this->orderRepository->create($data);
+        if ($createOrder) {
+            return array('msg' => 'Order has been created successfully!!!');
+        }
+    }
 }

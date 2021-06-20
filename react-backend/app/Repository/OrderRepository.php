@@ -32,7 +32,7 @@ class OrderRepository
 
     public function getOrderData()
     {
-        $getOrderOdata = Orders::paginate(10);
+        $getOrderOdata = Orders::orderBy('created_at', 'desc')->paginate(10);
         return ($getOrderOdata);
     }
 
@@ -113,5 +113,32 @@ class OrderRepository
     {
         $getLatestId = Orders::latest()->first()->toArray();
         return $getLatestId;
+    }
+
+    public function create($data)
+    {
+
+        foreach ($data['list'] as $list) {
+            try {
+                DB::beginTransaction();
+                $create = Orders::create([
+                    'order_number' => $data['orderId'],
+                    'itemname' => $list['name'],
+                    'sell_type' => $list['status'],
+                    'sellcount' => $list['quantity'],
+
+                ]);
+                if ($create) {
+                    $model = Products::where('itemname', $list['name'])->first();
+                    $model->count = $model->count - $list['quantity'];
+                    $model->save();
+                }
+                DB::commit();
+            } catch (Throwable $e) {
+                DB::rollback();
+                return $e;
+            }
+        }
+        return true;
     }
 }

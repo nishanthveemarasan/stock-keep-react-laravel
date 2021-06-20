@@ -19,13 +19,17 @@ const Posts = () => {
   const mapStateToProps = (state) => {
     return {
       postData: state.postStore.postData,
+      dataChanged: state.postStore.dataChanged,
     };
   };
-  useEffect(() => {
-    dispatch(getPostData());
-  }, [dispatch]);
-  const dispatch = useDispatch();
   const state = useSelector(mapStateToProps);
+  useEffect(() => {
+    if (state.dataChanged) {
+      dispatch(getPostData());
+    }
+  }, [state.dataChanged, dispatch]);
+  const dispatch = useDispatch();
+
   const classes = useStyles();
 
   const pageChangeHandler = (url) => {

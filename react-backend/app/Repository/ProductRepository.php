@@ -65,4 +65,10 @@ class ProductRepository
         $getItems = Products::get()->toArray();
         return $getItems;
     }
+
+    public function doesProductExists($itemname)
+    {
+        $checkItem = Products::where('itemname', $itemname)->exists();
+        return $checkItem;
+    }
 }

@@ -17,6 +17,7 @@ import CardFooter from "components/Card/CardFooter.js";
 import avatar from "assets/img/faces/marc.jpg";
 import { getSingleUser } from "store/user-slice";
 import axios from "axios";
+import { convertToObject } from "typescript";
 const styles = {
   cardCategoryWhite: {
     color: "rgba(255,255,255,.62)",
@@ -39,7 +40,10 @@ const styles = {
 const useStyles = makeStyles(styles);
 
 export default function UserProfile() {
-  const [selectedImage, setSelectedImage] = useState("");
+  const [selectedImage, setSelectedImage] = useState({
+    profileImage: "",
+    src: "",
+  });
   const mapStateToProps = (state) => {
     return {
       singleUserData: state.userStore.singleUserData,
@@ -53,23 +57,37 @@ export default function UserProfile() {
   const classes = useStyles();
   const fileSelectedHandler = (event) => {
     console.log(event.target.files[0]);
-  //  setSelectedImage(event.target.files[0]);
-    const fd = new FormData();
-    fd.append("image", event.target.files[0], event.target.files[0].name);
-    console.log(fd);
-    axios
-      .post("https://react-db-4c80e-default-rtdb.firebaseio.com/posts.json", fd)
-      .then((response) => {
-        console.log(response);
-      });
+    const url = URL.createObjectURL(event.target.files[0]);
+    console.log(url);
+    setSelectedImage((prevState) => {
+      return {
+        ...prevState,
+        profileImage: event.target.files[0],
+        src: url,
+      };
+    });
+
+    console.log(url);
+    // const fd = new FormData();
+    // fd.append("image", event.target.files[0], event.target.files[0].name);
+    // console.log(fd);
+    // axios
+    //   .post("https://react-db-4c80e-default-rtdb.firebaseio.com/posts.json", fd)
+    //   .then((response) => {
+    //     console.log(response);
+    //   });
   };
 
   const fileUploadHandler = () => {
-    const fd = new FormData();
-    fd.append("image", selectedImage, selectedImage.name);
-    console.log(fd);
+    var formData = new FormData();
+
+    formData.append("file", selectedImage.profileImage);
+    var options = { content: formData };
     axios
-      .post("https://react-db-4c80e-default-rtdb.firebaseio.com/posts.json", fd)
+      .post(
+        "https://ng-angular-b270a-default-rtdb.firebaseio.com/image.json",
+        options
+      )
       .then((response) => {
         console.log(response);
       });
@@ -89,6 +107,14 @@ export default function UserProfile() {
                 <GridItem xs={12} sm={12} md={5}>
                   <input type="file" onChange={fileSelectedHandler} />
                   <button onClick={fileUploadHandler}>Upload</button>
+                  <div>
+                    <img src={selectedImage.src} />
+                    <img
+                      src={
+                        "http://localhost:3000/8218beaf-336a-4a47-8ada-effedc8f0844"
+                      }
+                    />
+                  </div>
                 </GridItem>
                 <GridItem xs={12} sm={12} md={3}>
                   <CustomInput

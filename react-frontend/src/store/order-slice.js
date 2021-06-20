@@ -10,6 +10,7 @@ const initialState = {
   isDataChange: true,
   isOrderCreateOpen: false,
   orderList: [],
+  orderCreated: true,
 };
 
 const orderSlice = createSlice({
@@ -68,6 +69,13 @@ const orderSlice = createSlice({
     },
     removeList(state, action) {
       state.orderList.splice(action.payload.id, 1);
+    },
+    clearList(state) {
+      state.orderList = [];
+      state.orderCreated = true;
+    },
+    orderNotCreated(state) {
+      state.orderCreated = false;
     },
   },
 });

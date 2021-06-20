@@ -28,7 +28,7 @@ class productController extends Controller
         }
     }
 
-    public function getProductData($id, $key)
+    public function getProductData($id)
     {
         try {
 
@@ -57,11 +57,12 @@ class productController extends Controller
     {
         try {
             $data = $request->all();
+
             $validation = Validator::make(
                 $data,
                 [
                     "itemname" => "required",
-                    'itemcode' => 'required|',
+                    'itemcode' => 'required',
                     "count" => "required|integer|min:1",
 
                 ],
@@ -73,10 +74,12 @@ class productController extends Controller
 
                 ]
             );
+
             if ($validation->fails()) {
                 return $this->apiResponseService->failed($validation->errors(), 500);
             }
             $createProduct = $this->productService->createProduct($data);
+
             $response =  $this->apiResponseService->success(200, $createProduct);
             return $response;
         } catch (Throwable $e) {

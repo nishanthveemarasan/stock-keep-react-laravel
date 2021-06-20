@@ -79,7 +79,6 @@ const ProductModal = () => {
       id: state.orderId,
       itemname: productName,
     };
-    console.log(data);
     API.post("order/edit-order-data", data)
       .then((response) => {
         dispatch(orderStoreAction.closeLoadingAction());

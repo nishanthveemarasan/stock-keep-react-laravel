@@ -69,9 +69,21 @@ class orderController extends Controller
     public function getlatestId()
     {
         try {
-             $getLastedId = $this->orderService->getlatestId();
+            $getLastedId = $this->orderService->getlatestId();
 
             $response =  $this->apiResponseService->success(200, $getLastedId);
+            return $response;
+        } catch (Throwable $e) {
+            return $this->apiResponseService->failed($e->getMessage(), 500);
+        }
+    }
+
+    public function create(Request $request)
+    {
+        try {
+            $data = $request->all();
+            $create = $this->orderService->create($data);
+            $response =  $this->apiResponseService->success(200, $create);
             return $response;
         } catch (Throwable $e) {
             return $this->apiResponseService->failed($e->getMessage(), 500);

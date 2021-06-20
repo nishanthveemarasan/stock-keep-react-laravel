@@ -44,7 +44,7 @@ class PostService
 
         $createPost =  $this->postRepository->create($data);
         if ($createPost) {
-            return array('msg' => "You Post has been Successfully Created!!!");
+            return array('msg' => "You Post has been Created Successfully !!!");
         }
     }
 

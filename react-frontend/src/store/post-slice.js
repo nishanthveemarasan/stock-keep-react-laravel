@@ -10,6 +10,7 @@ const initialState = {
   isLoading: false,
   deletePost: "Are you Sure? You really want to DELETE this Post",
   iscreatePostMdelOpen: false,
+  dataChanged: true,
 };
 
 const postSlice = createSlice({
@@ -45,6 +46,12 @@ const postSlice = createSlice({
     closeCreatePostModel(state) {
       state.iscreatePostMdelOpen = false;
     },
+    dataDidChanged(state) {
+      state.dataChanged = true;
+    },
+    dataDidNotChanged(state) {
+      state.dataChanged = false;
+    },
   },
 });
 
@@ -53,6 +60,7 @@ export const getPostData = () => {
     API.get("posts/get-posts")
       .then((response) => {
         if (response.data.http_status == "200") {
+          dispatch(postStoreAction.dataDidNotChanged());
           dispatch(
             postStoreAction.getPostData({
               data: response.data,

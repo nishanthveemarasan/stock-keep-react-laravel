@@ -18,12 +18,12 @@
 // @material-ui/icons
 import Dashboard from "@material-ui/icons/Dashboard";
 import Person from "@material-ui/icons/Person";
-import LibraryBooks from "@material-ui/icons/LibraryBooks";
-import BubbleChart from "@material-ui/icons/BubbleChart";
-import LocationOn from "@material-ui/icons/LocationOn";
-import Notifications from "@material-ui/icons/Notifications";
-import Unarchive from "@material-ui/icons/Unarchive";
-import Language from "@material-ui/icons/Language";
+import LocalPostOfficeIcon from "@material-ui/icons/LocalPostOffice";
+import EventIcon from "@material-ui/icons/Event";
+import HistoryIcon from "@material-ui/icons/History";
+import TrackChangesIcon from "@material-ui/icons/TrackChanges";
+import LockIcon from "@material-ui/icons/Lock";
+import CommentIcon from "@material-ui/icons/Comment";
 // core components/views for Admin layout
 import DashboardPage from "views/Dashboard/Dashboard.js";
 import UserProfile from "views/UserProfile/UserProfile.js";
@@ -56,32 +56,8 @@ const dashboardRoutes = [
     path: "/items",
     name: "Products",
     rtlName: "لوحة القيادة",
-    icon: LibraryBooks,
+    icon: EventIcon,
     component: Item,
-    layout: "/admin",
-  },
-  {
-    path: "/sell",
-    name: "Sell History",
-    rtlName: "لوحة القيادة",
-    icon: LibraryBooks,
-    component: Sell,
-    layout: "/admin",
-  },
-  {
-    path: "/order-history",
-    name: "Track An Order",
-    rtlName: "لوحة القيادة",
-    icon: LibraryBooks,
-    component: TrackOrder,
-    layout: "/admin",
-  },
-  {
-    path: "/user-logs",
-    name: "Logs",
-    rtlName: "لوحة القيادة",
-    icon: LibraryBooks,
-    component: Logs,
     layout: "/admin",
   },
   {
@@ -93,19 +69,45 @@ const dashboardRoutes = [
     layout: "/admin",
   },
   {
-    path: "/comments",
-    name: "Comments",
-    rtlName: "ملف تعريفي للمستخدم",
-    icon: Person,
-    component: Comments,
+    path: "/sell",
+    name: "Sell History",
+    rtlName: "لوحة القيادة",
+    icon: HistoryIcon,
+    component: Sell,
+    layout: "/admin",
+  },
+  {
+    path: "/order-history",
+    name: "Track An Order",
+    rtlName: "لوحة القيادة",
+    icon: TrackChangesIcon,
+    component: TrackOrder,
     layout: "/admin",
   },
   {
     path: "/posts",
     name: "Posts",
     rtlName: "ملف تعريفي للمستخدم",
-    icon: Person,
+    icon: LocalPostOfficeIcon,
     component: Posts,
+    layout: "/admin",
+  },
+
+  {
+    path: "/comments",
+    name: "Comments",
+    rtlName: "ملف تعريفي للمستخدم",
+    icon: CommentIcon,
+    component: Comments,
+    layout: "/admin",
+  },
+
+  {
+    path: "/user-logs",
+    name: "Logs",
+    rtlName: "لوحة القيادة",
+    icon: LockIcon,
+    component: Logs,
     layout: "/admin",
   },
   {

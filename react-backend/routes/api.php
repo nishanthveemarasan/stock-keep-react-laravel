@@ -7,6 +7,7 @@ use App\Http\Controllers\LikeController;
 use App\Http\Controllers\orderController;
 use App\Http\Controllers\postController;
 use App\Http\Controllers\productController;
+use App\Http\Controllers\TestController;
 use App\Http\Controllers\userController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -25,7 +26,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
-
+Route::get('test', [TestController::class, 'test']);
 Route::get('get-dashboard-data', [DashBoardController::class, 'getDashBoardData']);
 Route::get('get-all-chairs/{id?}/{key?}', [productController::class, 'getAllChairesData']);
 Route::get('get-product-details/{id}', [productController::class, 'getProductData']);
@@ -34,12 +35,14 @@ Route::post('add-product', [productController::class, 'createProduct']);
 Route::get('get-product-names', [productController::class, 'getProductNames']);
 Route::get('get-products-without-pagination', [productController::class, 'allProducts']);
 Route::get('export-product-excel', [exportController::class, 'generateReport']);
+Route::get('export-product-pdf', [exportController::class, 'generatePdfReport']);
 Route::prefix('order')->group(function () {
     Route::get('get-order-data', [orderController::class, 'getOrderData']);
     Route::get('single-order-data/{id}', [orderController::class, 'singleOrderData']);
     Route::post('edit-order-data', [orderController::class, 'editOrderData']);
     Route::post('track-a-product-order-history', [orderController::class, 'trackOrderData']);
     Route::get('get-latest-order-id', [orderController::class, 'getlatestId']);
+    Route::post('create', [orderController::class, 'create']);
 });
 
 Route::prefix('users')->group(function () {

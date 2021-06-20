@@ -13,7 +13,7 @@ import Button from "react-bootstrap/Button";
 import styles from "assets/jss/material-dashboard-react/views/dashboardStyle.js";
 import API from "axios/axios";
 import OrderList from "components/UI/OrderList";
-import Form from "react-bootstrap/Form";
+import SnackbarContent from "components/Snackbar/SnackbarContent.js";
 const useStyles = makeStyles(styles);
 const OrderModel = (props) => {
   const {
@@ -41,6 +41,20 @@ const OrderModel = (props) => {
     reset: resetNumber,
   } = useInut(1);
   const [pName, setPName] = useState([]);
+  const [getState, setGetState] = useState({
+    isLoading: false,
+    alertText: "",
+    progressPercentage: "50%",
+    alertType: "",
+  });
+  const mapStateToProps = (state) => {
+    return {
+      isOrderCreateOpen: state.orderStore.isOrderCreateOpen,
+      orderList: state.orderStore.orderList,
+      orderCreated: state.orderStore.orderCreated,
+    };
+  };
+  const state = useSelector(mapStateToProps);
   useEffect(() => {
     API.get("get-product-names")
       .then((response) => {
@@ -51,21 +65,18 @@ const OrderModel = (props) => {
       .catch();
   }, []);
   useEffect(() => {
-    API.get("order/get-latest-order-id")
-      .then((response) => {
-        if (response.data?.http_status) {
-          setOrderId(response.data.data.order_id);
-        }
-      })
-      .catch();
-  }, []);
-  const mapStateToProps = (state) => {
-    return {
-      isOrderCreateOpen: state.orderStore.isOrderCreateOpen,
-      orderList: state.orderStore.orderList,
-    };
-  };
-  const state = useSelector(mapStateToProps);
+    if (state.orderCreated) {
+      API.get("order/get-latest-order-id")
+        .then((response) => {
+          if (response.data?.http_status) {
+            dispatch(orderStoreAction.orderNotCreated());
+            setOrderId(response.data.data.order_id);
+          }
+        })
+        .catch();
+    }
+  }, [state.orderCreated]);
+
   const dispatch = useDispatch();
   const onHideHandler = () => {
     dispatch(orderStoreAction.closeOrderModel());
@@ -126,6 +137,45 @@ const OrderModel = (props) => {
       list: state.orderList,
     };
     console.log(data);
+    setGetState((prevState) => {
+      return {
+        ...prevState,
+        isLoading: true,
+        alertText: "",
+      };
+    });
+    API.get(`test`, {
+      onDownloadProgress: (progressEvent) => {
+        let progress = `${Math.round(
+          (progressEvent.loaded / progressEvent.total) * 100
+        )}%`;
+        setGetState((prevState) => {
+          return {
+            ...prevState,
+            progressPercentage: progress,
+          };
+        });
+      },
+    })
+      .then((response) => {
+        const msg = response.data.data.msg;
+        const status = response.data.http_status;
+        if (status === 200) {
+          dispatch(orderStoreAction.clearList());
+          setGetState((prevState) => {
+            return {
+              ...prevState,
+              alertText: msg,
+              alertType: "success",
+              isLoading: false,
+              progressPercentage: "50%",
+            };
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
   };
 
   return (
@@ -135,9 +185,29 @@ const OrderModel = (props) => {
         onHideHandler={onHideHandler}
         onActionHandler={onSubmitHandler}
         heading="Make an Order"
-        actionName="Add Order"
+        actionName={
+          getState.isLoading ? getState.progressPercentage : "Add Order"
+        }
         size="lg"
       >
+        {getState.isLoading && (
+          <div className="progress">
+            <div
+              className="progress-bar"
+              role="progressbar"
+              style={{ width: `${getState.progressPercentage}` }}
+              aria-valuenow="25"
+              aria-valuemin="0"
+              aria-valuemax="100"
+            ></div>
+          </div>
+        )}
+        {getState.alertText && (
+          <SnackbarContent
+            message={getState.alertText}
+            color={`${getState.alertType}`}
+          />
+        )}
         <FormInput
           id="orderNumber"
           type="text"
@@ -148,7 +218,7 @@ const OrderModel = (props) => {
         />
         <div className="mt-4"></div>
         <Card>
-          <CardHeader color="success">
+          <CardHeader color="primary">
             <h4 className={classes.cardTitleWhite}>Order Details</h4>
           </CardHeader>
           <CardBody>
@@ -196,7 +266,7 @@ const OrderModel = (props) => {
                   value={quantity}
                 />
               </div>
-              <div className="col-md-3">
+              <div className="col-md-2">
                 <label className="d-block" style={{ visibility: "hidden" }}>
                   Button
                 </label>

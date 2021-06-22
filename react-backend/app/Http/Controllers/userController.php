@@ -83,5 +83,29 @@ class userController extends Controller
             return $this->apiResponseService->failed($e->getMessage(), 500);
         }
     }
-    
+
+    public function changeProfilePicture(Request $request)
+    {
+
+        try {
+            $data = $request->all();
+            $disableUser = $this->userService->disableUser($data);
+            $response =  $this->apiResponseService->success(200, $disableUser);
+            return $response;
+        } catch (Throwable $e) {
+            return $this->apiResponseService->failed($e->getMessage(), 500);
+        }
+    }
+
+    public function updateUser(Request $request)
+    {
+        try {
+            $data = $request->all();
+            $editUserRole = $this->userService->updateUser($data);
+            $response =  $this->apiResponseService->success(200, $editUserRole);
+            return $response;
+        } catch (Throwable $e) {
+            return $this->apiResponseService->failed($e->getMessage(), 500);
+        }
+    }
 }

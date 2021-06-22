@@ -4,6 +4,7 @@ use App\Http\Controllers\commentController;
 use App\Http\Controllers\DashBoardController;
 use App\Http\Controllers\exportController;
 use App\Http\Controllers\LikeController;
+use App\Http\Controllers\MailController;
 use App\Http\Controllers\orderController;
 use App\Http\Controllers\postController;
 use App\Http\Controllers\productController;
@@ -26,6 +27,11 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::middleware(['cors'])->group(function () {
+    Route::post('/get-image', [TestController::class, 'csv']);
+});
+
+Route::get('email', [MailController::class, 'sendMail']);
 Route::get('test', [TestController::class, 'test']);
 Route::get('get-dashboard-data', [DashBoardController::class, 'getDashBoardData']);
 Route::get('get-all-chairs/{id?}/{key?}', [productController::class, 'getAllChairesData']);
@@ -36,6 +42,9 @@ Route::get('get-product-names', [productController::class, 'getProductNames']);
 Route::get('get-products-without-pagination', [productController::class, 'allProducts']);
 Route::get('export-product-excel', [exportController::class, 'generateReport']);
 Route::get('export-product-pdf', [exportController::class, 'generatePdfReport']);
+Route::prefix('product')->group(function () {
+    Route::post('add-multiple-products', [productController::class, 'addMultipleProduct']);
+});
 Route::prefix('order')->group(function () {
     Route::get('get-order-data', [orderController::class, 'getOrderData']);
     Route::get('single-order-data/{id}', [orderController::class, 'singleOrderData']);
@@ -52,6 +61,7 @@ Route::prefix('users')->group(function () {
     Route::post('edit-user-role', [userController::class, 'editUserRole']);
     Route::post('disable-a-user', [userController::class, 'disableUser']);
     Route::get('get-a-user/{id}', [userController::class, 'getUser']);
+    Route::post('update-a-user', [userController::class, 'updateUser']);
 });
 
 Route::prefix('posts')->group(function () {

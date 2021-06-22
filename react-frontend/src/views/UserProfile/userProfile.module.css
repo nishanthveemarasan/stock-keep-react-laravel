@@ -1,0 +1,7 @@
+.user-image {
+  width: 100%;
+  min-width: 80px;
+  height: 20vh;
+  border-radius: 50%;
+  box-shadow: 0.5rem 0.7rem 0.9rem lightgray;
+}

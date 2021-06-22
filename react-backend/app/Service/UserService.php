@@ -70,5 +70,13 @@ class UserService
         }
     }
 
-   
+    public function updateUser($data)
+    {
+        $userId = $data['user_id'];
+        unset($data['user_id']);
+        $updateUser =  $this->userRepository->updateUser($userId, $data);
+        if ($updateUser) {
+            return array('msg' => "User's Data has been updated Successfully!!!");
+        }
+    }
 }

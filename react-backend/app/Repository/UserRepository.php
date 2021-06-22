@@ -56,4 +56,11 @@ class UserRepository
 
         return $disableUser;
     }
+
+    public function updateUser($id, $data)
+    {
+        $updateUser = User::where('id', $id)
+            ->update($data);
+        return $updateUser;
+    }
 }

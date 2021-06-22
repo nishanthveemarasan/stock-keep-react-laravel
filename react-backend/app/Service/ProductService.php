@@ -2,8 +2,9 @@
 
 namespace App\Service;
 
-use App\Repository\ProductRepository;
 use Throwable;
+use Illuminate\Support\Facades\DB;
+use App\Repository\ProductRepository;
 
 class ProductService
 {
@@ -81,5 +82,31 @@ class ProductService
     {
 
         return $this->productRepository->exportProducts();
+    }
+    public function addMultipleProduct($data)
+    {
+        try {
+            DB::beginTransaction();
+            for ($i = 1; $i < count($data); $i++) {
+
+                $create = array(
+                    "itemname" => $data[$i][1],
+                    "itemcode" => $data[$i][0],
+                    "count" => $data[$i][2],
+                );
+                $checkItemExists = $this->productRepository->doesProductExists($create['itemname']);
+                if (!$checkItemExists) {
+                    $ceateProduct =  $this->productRepository->createProduct($create);
+                }
+            }
+            DB::commit();
+            return array(
+                'type' => 'success',
+                'msg' => 'Product has been added successfully!!!'
+            );
+        } catch (Throwable $e) {
+            DB::rollBack();
+            return $e;
+        }
     }
 }

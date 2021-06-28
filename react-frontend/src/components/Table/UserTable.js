@@ -54,7 +54,7 @@ const UserTable = (props) => {
   const dispatch = useDispatch();
   return (
     <React.Fragment>
-      <div className="row">
+      <div className="row mt-4">
         {data &&
           data.map((row, index) => {
             return (

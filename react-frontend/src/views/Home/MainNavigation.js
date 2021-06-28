@@ -13,6 +13,7 @@ import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
+import navImage from "assets/img/logo.png";
 const useStyles = makeStyles(styles);
 const MainNavigation = () => {
   const classes = useStyles();
@@ -54,7 +55,9 @@ const MainNavigation = () => {
 
   return (
     <header className={navClasses.header}>
-      <div className={navClasses.logo}>RELAXHOUSE</div>
+      <div className={navClasses.logo}>
+        <img src={navImage} />
+      </div>
       {openSideMenu && (
         <div
           className={navClasses.backdrop}

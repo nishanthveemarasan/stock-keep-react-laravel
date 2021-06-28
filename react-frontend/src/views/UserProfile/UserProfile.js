@@ -39,7 +39,7 @@ const styles = {
 const useStyles = makeStyles(styles);
 
 export default function UserProfile() {
-  const [alert , setAlert] = useState('');
+  const [alert, setAlert] = useState("");
   const [selectedImage, setSelectedImage] = useState({
     profileImage: "",
     src: "",
@@ -108,6 +108,7 @@ export default function UserProfile() {
           setEmail(userData.email);
           setFirstName(userData.name);
           setLastName(userData.last_name);
+          setPhone(userData.phone);
           setCity(userData.city);
           setCountry(userData.country);
           setZip(userData.postal_code);
@@ -141,14 +142,16 @@ export default function UserProfile() {
 
     formData.append("file", event.target.files[0]);
     formData.append("userId", 1);
-    API.post("get-image", formData, {
+    API.post("users/update-prifile-image", formData, {
       headers: {
         "Content-type": "multipart/form-data",
         "Access-Control-Allow-Origin": "*",
       },
     })
       .then((response) => {
-        console.log(response.data);
+        if (response.data.http_status === 200) {
+          console.log("success");
+        }
       })
       .catch();
 
@@ -171,190 +174,186 @@ export default function UserProfile() {
       .catch();
   };
 
-  const onSubmitHandler = (event) =>{
+  const onSubmitHandler = (event) => {
     event.preventDefault();
-    setAlert('');
+    setAlert("");
     const data = {
-      user_id : 1,
-      phone:phoneNumber,
+      user_id: 1,
+      phone: phoneNumber,
       last_name: lastName,
-      about_me:aboutMe,
-      city:city,
-      country:country,
-      postal_code:zip,
-      job_title: jobTitle
-    }
-    API.post('users/update-a-user' , data)
-        .then(response =>{
-          if(response.data.http_status === 200)
-          {
-            setAlert(response.data.data.msg);
-          }
-         
-        })
-        .catch()
-  }
+      about_me: aboutMe,
+      city: city,
+      country: country,
+      postal_code: zip,
+      job_title: jobTitle,
+    };
+    API.post("users/update-a-user", data)
+      .then((response) => {
+        if (response.data.http_status === 200) {
+          setAlert(response.data.data.msg);
+        }
+      })
+      .catch();
+  };
   return (
     <div>
       <GridContainer>
         <GridItem xs={12} sm={12} md={8}>
           <Card>
-          <Form onSubmit={onSubmitHandler}>
-            <CardHeader color="primary">
-              <h4 className={classes.cardTitleWhite}>Edit Profile</h4>
-              <p className={classes.cardCategoryWhite}>Complete your profile</p>
-            </CardHeader>
-            <CardBody>
-            {alert && (
-          <SnackbarContent message={alert} color="success" />
-        )}
-            
-              <GridContainer>
-                <GridItem xs={12} sm={12} md={6}>
-                  <FormInput
-                    id="username"
-                    type="text"
-                    labelName="User Name"
-                    readOnly="true"
-                    value={username}
-                    change={onUserNameChanged}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={6}>
-                  <FormInput
-                    id="userEmail"
-                    type="email"
-                    labelName="Email Address"
-                    readOnly="true"
-                    value={email}
-                    change={onEmailChanged}
-                  />
-                </GridItem>
-              </GridContainer>
-              <GridContainer>
-                <GridItem xs={12} sm={12} md={4}>
-                  <FormInput
-                    id="firstName"
-                    type="text"
-                    labelName="First Name"
-                    readOnly=""
-                    value={firstName}
-                    change={onFNameChanged}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={4}>
-                  <FormInput
-                    id="lastName"
-                    type="text"
-                    labelName="Last Name"
-                    readOnly=""
-                    value={!lastName ? "" : lastName}
-                    change={onLNameChanged}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={4}>
-                  <FormInput
-                    id="phone"
-                    type="text"
-                    labelName="Phone Number"
-                    readOnly=""
-                    value={!phoneNumber ? "" : phoneNumber}
-                    change={onPhoneChanged}
-                  />
-                </GridItem>
-              </GridContainer>
-              <GridContainer>
-                <GridItem xs={12} sm={12} md={4}>
-                  <FormInput
-                    id="userCity"
-                    type="text"
-                    labelName="City"
-                    readOnly=""
-                    value={!city ? "" : city}
-                    change={onCityChanged}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={4}>
-                  <FormInput
-                    id="userCountry"
-                    type="text"
-                    labelName="Country"
-                    readOnly=""
-                    value={!country ? "" : country}
-                    change={onCountryChanged}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={4}>
-                  <FormInput
-                    id="userPostCode"
-                    type="text"
-                    labelName="Postal Code"
-                    readOnly=""
-                    value={!zip ? "" : zip}
-                    change={onZipChanged}
-                  />
-                </GridItem>
-              </GridContainer>{" "}
-              <GridContainer>
-                <GridItem xs={12} sm={12} md={6}>
-                  <FormInput
-                    id="jobTitle"
-                    type="text"
-                    labelName="Job Title"
-                    readOnly=""
-                    value={!jobTitle ? "" : jobTitle}
-                    change={onJobChanged}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={6}>
-                  <FormInput
-                    id="userRole"
-                    type="text"
-                    labelName="User Role"
-                    readOnly="true"
-                    value={userRole}
-                    change={onRoleChanged}
-                  />
-                </GridItem>
-              </GridContainer>
-              <GridContainer>
-                <GridItem xs={12} sm={9} md={8} className="">
-                  <FormInput
-                    id="userImage"
-                    type="file"
-                    labelName="Change Profile"
-                    readOnly=""
-                    change={fileSelectedHandler}
-                  />
-                </GridItem>
-                <GridItem xs={6} sm={3} md={4} lg={3} xl={2} className="">
-                  <img
-                    src={selectedImage.src}
-                    alt="..."
-                    className={userClass["user-image"]}
-                  />
-                </GridItem>
-              </GridContainer>
-              <GridContainer>
-                <GridItem xs={12} sm={12} md={12}>
-                  <FormTextarea
-                    id="aboutUSer"
-                    type="textarea"
-                    labelName="About Yourself"
-                    readOnly=""
-                    rows="3"
-                    value={!aboutMe ? "" : aboutMe}
-                    change={onAbountMeChanged}
-                  ></FormTextarea>
-                </GridItem>
-              </GridContainer>
-             
-            </CardBody>
-            <CardFooter>
-            <Button variant="primary" type="submit">
-            Update Profile
-          </Button>
-            </CardFooter>
+            <Form onSubmit={onSubmitHandler}>
+              <CardHeader color="primary">
+                <h4 className={classes.cardTitleWhite}>Edit Profile</h4>
+                <p className={classes.cardCategoryWhite}>
+                  Complete your profile
+                </p>
+              </CardHeader>
+              <CardBody>
+                {alert && <SnackbarContent message={alert} color="success" />}
+                <GridContainer>
+                  <GridItem xs={12} sm={12} md={6}>
+                    <FormInput
+                      id="username"
+                      type="text"
+                      labelName="User Name"
+                      readOnly="true"
+                      value={username}
+                      change={onUserNameChanged}
+                    />
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={6}>
+                    <FormInput
+                      id="userEmail"
+                      type="email"
+                      labelName="Email Address"
+                      readOnly="true"
+                      value={email}
+                      change={onEmailChanged}
+                    />
+                  </GridItem>
+                </GridContainer>
+                <GridContainer>
+                  <GridItem xs={12} sm={12} md={4}>
+                    <FormInput
+                      id="firstName"
+                      type="text"
+                      labelName="First Name"
+                      readOnly=""
+                      value={firstName}
+                      change={onFNameChanged}
+                    />
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={4}>
+                    <FormInput
+                      id="lastName"
+                      type="text"
+                      labelName="Last Name"
+                      readOnly=""
+                      value={!lastName ? "" : lastName}
+                      change={onLNameChanged}
+                    />
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={4}>
+                    <FormInput
+                      id="phone"
+                      type="text"
+                      labelName="Phone Number"
+                      readOnly=""
+                      value={!phoneNumber ? "" : phoneNumber}
+                      change={onPhoneChanged}
+                    />
+                  </GridItem>
+                </GridContainer>
+                <GridContainer>
+                  <GridItem xs={12} sm={12} md={4}>
+                    <FormInput
+                      id="userCity"
+                      type="text"
+                      labelName="City"
+                      readOnly=""
+                      value={!city ? "" : city}
+                      change={onCityChanged}
+                    />
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={4}>
+                    <FormInput
+                      id="userCountry"
+                      type="text"
+                      labelName="Country"
+                      readOnly=""
+                      value={!country ? "" : country}
+                      change={onCountryChanged}
+                    />
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={4}>
+                    <FormInput
+                      id="userPostCode"
+                      type="text"
+                      labelName="Postal Code"
+                      readOnly=""
+                      value={!zip ? "" : zip}
+                      change={onZipChanged}
+                    />
+                  </GridItem>
+                </GridContainer>{" "}
+                <GridContainer>
+                  <GridItem xs={12} sm={12} md={6}>
+                    <FormInput
+                      id="jobTitle"
+                      type="text"
+                      labelName="Job Title"
+                      readOnly=""
+                      value={!jobTitle ? "" : jobTitle}
+                      change={onJobChanged}
+                    />
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={6}>
+                    <FormInput
+                      id="userRole"
+                      type="text"
+                      labelName="User Role"
+                      readOnly="true"
+                      value={userRole}
+                      change={onRoleChanged}
+                    />
+                  </GridItem>
+                </GridContainer>
+                <GridContainer>
+                  <GridItem xs={12} sm={9} md={8} className="">
+                    <FormInput
+                      id="userImage"
+                      type="file"
+                      labelName="Change Profile"
+                      readOnly=""
+                      change={fileSelectedHandler}
+                    />
+                  </GridItem>
+                  <GridItem xs={6} sm={3} md={4} lg={3} xl={2} className="">
+                    <img
+                      src={selectedImage.src}
+                      alt="..."
+                      className={userClass["user-image"]}
+                    />
+                  </GridItem>
+                </GridContainer>
+                <GridContainer>
+                  <GridItem xs={12} sm={12} md={12}>
+                    <FormTextarea
+                      id="aboutUSer"
+                      type="textarea"
+                      labelName="About Yourself"
+                      readOnly=""
+                      rows="3"
+                      value={!aboutMe ? "" : aboutMe}
+                      change={onAbountMeChanged}
+                    ></FormTextarea>
+                  </GridItem>
+                </GridContainer>
+              </CardBody>
+              <CardFooter>
+                <Button variant="primary" type="submit">
+                  Update Profile
+                </Button>
+              </CardFooter>
             </Form>
           </Card>
         </GridItem>
@@ -377,9 +376,7 @@ export default function UserProfile() {
                   ? aboutMe
                   : "please describe about yourself briefly, including your job description, How long have you been working here and your hobbies too"}
               </p>
-              <Button color="primary" >
-                Follow
-              </Button>
+              <Button color="primary">Follow</Button>
             </CardBody>
           </Card>
         </GridItem>

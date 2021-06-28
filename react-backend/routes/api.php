@@ -62,6 +62,9 @@ Route::prefix('users')->group(function () {
     Route::post('disable-a-user', [userController::class, 'disableUser']);
     Route::get('get-a-user/{id}', [userController::class, 'getUser']);
     Route::post('update-a-user', [userController::class, 'updateUser']);
+    Route::post('check-username', [userController::class, 'checkUsername']);
+    Route::post('create', [userController::class, 'create']);
+    Route::post('update-prifile-image', [userController::class, 'updateProfileImage']);
 });
 
 Route::prefix('posts')->group(function () {

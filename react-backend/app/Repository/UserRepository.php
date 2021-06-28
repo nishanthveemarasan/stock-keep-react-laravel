@@ -63,4 +63,24 @@ class UserRepository
             ->update($data);
         return $updateUser;
     }
+
+    public function checkUsername($name)
+    {
+        $checkUser = User::where('username', $name)->count();
+        return $checkUser;
+    }
+    public function create($data)
+    {
+        //  dd($data);
+        // $create = User::create($data);
+        // return $create;
+        return true;
+    }
+    public function updateProfileImage($id, $imageUrl)
+    {
+        $updateImage = User::find($id);
+        $updateImage->profile_photo_path = $imageUrl;
+        $updateImage->save();
+        return $updateImage;
+    }
 }

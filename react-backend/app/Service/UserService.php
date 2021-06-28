@@ -79,4 +79,31 @@ class UserService
             return array('msg' => "User's Data has been updated Successfully!!!");
         }
     }
+    public function checkUsername($data)
+    {
+        $username = $data['userName'];
+        $checkUser =  $this->userRepository->checkUsername($username);
+        if ($checkUser) {
+            return array('msg' => "failed");
+        } else {
+            return array('msg' => "success");
+        }
+    }
+    public function create($data)
+    {
+        $create =  $this->userRepository->create($data);
+        if ($create) {
+            return array('msg' => "success");
+        }
+    }
+
+    public function updateProfileImage($data, $path)
+    {
+        $id = $data['userId'];
+        $imageUrl = $data['imageUrl'];
+        $updateImage =  $this->userRepository->updateProfileImage($id, $imageUrl);
+        if ($updateImage) {
+            return array('msg' => "http://relaxreact.test/react-backend/storage/app/public/" . $path);
+        }
+    }
 }

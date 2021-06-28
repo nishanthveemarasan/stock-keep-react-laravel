@@ -5,6 +5,7 @@ import likeSlice from "./like-slice";
 import orderSlice from "./order-slice";
 import postSlice from "./post-slice";
 import productSlice from "./product-slice";
+import registerSlice from "./register-slice";
 import userSlice from "./user-slice";
 
 const store = configureStore({
@@ -16,6 +17,7 @@ const store = configureStore({
     commentStore: commentSlice.reducer,
     postStore: postSlice.reducer,
     likeStore: likeSlice.reducer,
+    registerStore: registerSlice.reducer,
   },
 });
 
@@ -26,5 +28,6 @@ export const userStoreAction = userSlice.actions;
 export const commentStoreAction = commentSlice.actions;
 export const postStoreAction = postSlice.actions;
 export const likeStoreAction = likeSlice.actions;
+export const registerStoreAction = registerSlice.actions;
 
 export default store;

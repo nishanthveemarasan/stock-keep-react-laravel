@@ -40,17 +40,17 @@ const MainNavigation = () => {
     setOpenSideMenu(false);
   };
 
-  useEffect(() => {
-    function handleResize() {
-      if (window.innerWidth <= 768) {
-        setHideNav(true);
-      } else {
-        setHideNav(false);
-        setOpenSideMenu(false);
-      }
-    }
-    window.addEventListener("resize", handleResize);
-  }, [window.innerWidth]);
+  // useEffect(() => {
+  //   function handleResize() {
+  //     if (window.innerWidth <= 768) {
+  //       setHideNav(true);
+  //     } else {
+  //       setHideNav(false);
+  //       setOpenSideMenu(false);
+  //     }
+  //   }
+  //   window.addEventListener("resize", handleResize);
+  // }, [window.innerWidth, handleResize]);
 
   return (
     <header className={navClasses.header}>

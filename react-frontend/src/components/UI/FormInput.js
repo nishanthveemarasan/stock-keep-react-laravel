@@ -10,6 +10,7 @@ const FormInput = (props) => {
         onChange={props.change}
         value={props.value}
         list={props.list}
+        onBlur={props.blur}
       />
     </div>
   );

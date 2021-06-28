@@ -49,52 +49,51 @@ const ProductModel = (props) => {
     dispatch(productStoreAction.closeCreateModel());
   };
   const onSubmitHandler = (event) => {
-    event.preventDefault();
     if (trackType === "addWithCsv") {
       console.log(selectedFile);
-      setGetState((prevState) => {
-        return {
-          ...prevState,
-          isLoading: true,
-          alertText: "",
-        };
-      });
-      var formData = new FormData();
-      formData.append("file", selectedFile);
-      API.post("product/add-multiple-products", formData, {
-        onDownloadProgress: (progressEvent) => {
-          let progress = `${Math.round(
-            (progressEvent.loaded / progressEvent.total) * 100
-          )}%`;
-          setGetState((prevState) => {
-            return {
-              ...prevState,
-              progressPercentage: progress,
-            };
-          });
-        },
-      })
-        .then((response) => {
-          console.log(response.data);
-          const msg = response.data.data.msg;
-          const type = response.data.data.type;
-          if (type === "success") {
-            dispatch(productStoreAction.isDataChange());
-            setGetState((prevState) => {
-              return {
-                ...prevState,
-                alertText: msg,
-                alertType: "success",
-                isLoading: false,
-                progressPercentage: "50%",
-              };
-            });
-          }
-        })
-        .catch((error) => {
-          console.log(error.message);
-        });
-      setTrackType("");
+      // setGetState((prevState) => {
+      //   return {
+      //     ...prevState,
+      //     isLoading: true,
+      //     alertText: "",
+      //   };
+      // });
+      // var formData = new FormData();
+      // formData.append("file", selectedFile);
+      // API.post("product/add-multiple-products", formData, {
+      //   onDownloadProgress: (progressEvent) => {
+      //     let progress = `${Math.round(
+      //       (progressEvent.loaded / progressEvent.total) * 100
+      //     )}%`;
+      //     setGetState((prevState) => {
+      //       return {
+      //         ...prevState,
+      //         progressPercentage: progress,
+      //       };
+      //     });
+      //   },
+      // })
+      //   .then((response) => {
+      //     console.log(response.data);
+      //     const msg = response.data.data.msg;
+      //     const type = response.data.data.type;
+      //     if (type === "success") {
+      //       dispatch(productStoreAction.isDataChange());
+      //       setGetState((prevState) => {
+      //         return {
+      //           ...prevState,
+      //           alertText: msg,
+      //           alertType: "success",
+      //           isLoading: false,
+      //           progressPercentage: "50%",
+      //         };
+      //       });
+      //     }
+      //   })
+      //   .catch((error) => {
+      //     console.log(error.message);
+      //   });
+      // setTrackType("");
     } else {
       const data = {
         itemname: productName,

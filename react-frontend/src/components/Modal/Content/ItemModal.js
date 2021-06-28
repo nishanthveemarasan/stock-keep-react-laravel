@@ -6,6 +6,8 @@ import FormInput from "components/UI/FormInput";
 import API from "axios/axios";
 import useInut from "hooks/user-input";
 import SnackbarContent from "components/Snackbar/SnackbarContent.js";
+import GridItem from "components/Grid/GridItem.js";
+import GridContainer from "components/Grid/GridContainer.js";
 const ItemModal = (props) => {
   const {
     enteredInput: productCount,
@@ -22,9 +24,38 @@ const ItemModal = (props) => {
     setEnteredInput: setProductName,
     onInputChangeHandler: onProductNameChanger,
   } = useInut("");
+  
   const [AlertCode, setAlertCode] = useState(0);
   const [AlertText, setAlertText] = useState("");
   const [hideForm, setHideForm] = useState(true);
+
+  const [selectedImage, setSelectedImage] = useState({
+    profileImage: "",
+    src: "",
+  });
+  const fileSelectedHandler = (event) => {
+    console.log("hi");
+    console.log(event.target.files[0]);
+    const url = URL.createObjectURL(event.target.files[0]);
+    setSelectedImage((prevState) => {
+      return {
+        ...prevState,
+        profileImage: event.target.files[0],
+        src: url,
+      };
+    });
+    var formData = new FormData();
+
+    formData.append("file", event.target.files[0]);
+    formData.append("userId", 1);
+    API.post("get-image", formData)
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch();
+
+    // console.log(url);
+  };
   const mapStateToProps = (state) => {
     return {
       isShowModel: state.productStore.isChairModalOpen,
@@ -105,6 +136,17 @@ const ItemModal = (props) => {
         {state.showAlert && (
           <SnackbarContent message={AlertText} color="success" />
         )}
+        <GridContainer>
+          <GridItem xs={12} sm={9} md={8} className="">
+            <FormInput
+              id="userImage"
+              type="file"
+              labelName="Change Profile"
+              readOnly=""
+              change={fileSelectedHandler}
+            />
+          </GridItem>
+        </GridContainer>
         {hideForm && (
           <Fragment>
             <FormInput

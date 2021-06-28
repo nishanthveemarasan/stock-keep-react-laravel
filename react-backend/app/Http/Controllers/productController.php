@@ -108,4 +108,43 @@ class productController extends Controller
             return $this->apiResponseService->failed($e->getMessage(), 500);
         }
     }
+
+    public function addMultipleProduct(Request $request)
+    {
+        try {
+            $file = $request->file('file');
+            $filename = $file->getClientOriginalName();
+            $extension = $file->getClientOriginalExtension();
+            $fileSize = $file->getSize();
+            $valid_extension = array("csv");
+            $location = 'uploads';
+            $maxFileSize = 2097152;
+            if (!in_array(strtolower($extension), $valid_extension)) {
+                return $this->apiResponseService->failed(array('msg' => 'Please Upload CSV file only!!'), 500);
+            } elseif ($fileSize >= $maxFileSize) {
+                return $this->apiResponseService->failed(array('msg' => 'File size should be lessthan 2MB!!'), 500);
+            }
+            $file->move($location, $filename);
+            $filepath = public_path($location . "/" . $filename);
+            $file = fopen($filepath, "r");
+
+            $data = array();
+            $i = 0;
+
+            while (($filedata = fgetcsv($file, 1000, ",")) !== FALSE) {
+                $num = count($filedata);
+                for ($c = 0; $c < $num; $c++) {
+                    $data[$i][] = $filedata[$c];
+                }
+                $i++;
+            }
+            fclose($file);
+
+            $createProduct = $this->productService->addMultipleProduct($data);
+            $response =  $this->apiResponseService->success(200, $createProduct);
+            return $response;
+        } catch (Throwable $e) {
+            return $this->apiResponseService->failed($e->getMessage(), 500);
+        }
+    }
 }

@@ -1,23 +1,22 @@
 import React, { useEffect, useState } from "react";
 // @material-ui/core components
-import { useSelector, useDispatch } from "react-redux";
+import userClass from "./userProfile.module.css";
 import { makeStyles } from "@material-ui/core/styles";
-import InputLabel from "@material-ui/core/InputLabel";
 // core components
 import GridItem from "components/Grid/GridItem.js";
 import GridContainer from "components/Grid/GridContainer.js";
-import CustomInput from "components/CustomInput/CustomInput.js";
-import Button from "components/CustomButtons/Button.js";
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
 import Card from "components/Card/Card.js";
 import CardHeader from "components/Card/CardHeader.js";
 import CardAvatar from "components/Card/CardAvatar.js";
 import CardBody from "components/Card/CardBody.js";
 import CardFooter from "components/Card/CardFooter.js";
-
-import avatar from "assets/img/faces/marc.jpg";
-import { getSingleUser } from "store/user-slice";
-import axios from "axios";
-import { convertToObject } from "typescript";
+import FormInput from "components/UI/FormInput";
+import FormTextarea from "components/UI/FormTextarea";
+import SnackbarContent from "components/Snackbar/SnackbarContent.js";
+import API from "axios/axios";
+import useInut from "hooks/user-input";
 const styles = {
   cardCategoryWhite: {
     color: "rgba(255,255,255,.62)",
@@ -40,25 +39,98 @@ const styles = {
 const useStyles = makeStyles(styles);
 
 export default function UserProfile() {
+  const [alert, setAlert] = useState("");
   const [selectedImage, setSelectedImage] = useState({
     profileImage: "",
     src: "",
   });
-  const mapStateToProps = (state) => {
-    return {
-      singleUserData: state.userStore.singleUserData,
-    };
-  };
+  const {
+    enteredInput: username,
+    setEnteredInput: setUsername,
+    onInputChangeHandler: onUserNameChanged,
+  } = useInut("");
+  const {
+    enteredInput: email,
+    setEnteredInput: setEmail,
+    onInputChangeHandler: onEmailChanged,
+  } = useInut("");
+  const {
+    enteredInput: firstName,
+    setEnteredInput: setFirstName,
+    onInputChangeHandler: onFNameChanged,
+  } = useInut("");
+  const {
+    enteredInput: lastName,
+    setEnteredInput: setLastName,
+    onInputChangeHandler: onLNameChanged,
+  } = useInut("");
+  const {
+    enteredInput: phoneNumber,
+    setEnteredInput: setPhone,
+    onInputChangeHandler: onPhoneChanged,
+  } = useInut("");
+  const {
+    enteredInput: city,
+    setEnteredInput: setCity,
+    onInputChangeHandler: onCityChanged,
+  } = useInut("");
+  const {
+    enteredInput: country,
+    setEnteredInput: setCountry,
+    onInputChangeHandler: onCountryChanged,
+  } = useInut("");
+  const {
+    enteredInput: zip,
+    setEnteredInput: setZip,
+    onInputChangeHandler: onZipChanged,
+  } = useInut("");
+  const {
+    enteredInput: jobTitle,
+    setEnteredInput: setJobTitle,
+    onInputChangeHandler: onJobChanged,
+  } = useInut("");
+  const {
+    enteredInput: aboutMe,
+    setEnteredInput: SetAboutMe,
+    onInputChangeHandler: onAbountMeChanged,
+  } = useInut("");
+  const {
+    enteredInput: userRole,
+    setEnteredInput: setUserRole,
+    onInputChangeHandler: onRoleChanged,
+  } = useInut("");
   useEffect(() => {
-    dispatch(getSingleUser());
-  }, [dispatch]);
-  const dispatch = useDispatch();
-  const state = useSelector(mapStateToProps);
+    API.get("users/get-a-user/1")
+      .then((response) => {
+        if (response.data.http_status == "200") {
+          const userData = response.data.data;
+          setUsername(userData.username);
+          setEmail(userData.email);
+          setFirstName(userData.name);
+          setLastName(userData.last_name);
+          setPhone(userData.phone);
+          setCity(userData.city);
+          setCountry(userData.country);
+          setZip(userData.postal_code);
+          setJobTitle(userData.job_title);
+          SetAboutMe(userData.about_me);
+          setUserRole(userData.roles);
+          setSelectedImage((prevState) => {
+            return {
+              ...prevState,
+              src: userData.profile_photo_path,
+            };
+          });
+        }
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+  }, []);
+
   const classes = useStyles();
   const fileSelectedHandler = (event) => {
-    console.log(event.target.files[0]);
     const url = URL.createObjectURL(event.target.files[0]);
-    console.log(url);
     setSelectedImage((prevState) => {
       return {
         ...prevState,
@@ -66,164 +138,245 @@ export default function UserProfile() {
         src: url,
       };
     });
+    var formData = new FormData();
 
-    console.log(url);
-    // const fd = new FormData();
-    // fd.append("image", event.target.files[0], event.target.files[0].name);
-    // console.log(fd);
-    // axios
-    //   .post("https://react-db-4c80e-default-rtdb.firebaseio.com/posts.json", fd)
-    //   .then((response) => {
-    //     console.log(response);
-    //   });
+    formData.append("file", event.target.files[0]);
+    formData.append("userId", 1);
+    API.post("users/update-prifile-image", formData, {
+      headers: {
+        "Content-type": "multipart/form-data",
+        "Access-Control-Allow-Origin": "*",
+      },
+    })
+      .then((response) => {
+        if (response.data.http_status === 200) {
+          console.log("success");
+        }
+      })
+      .catch();
+
+    // console.log(url);
   };
 
   const fileUploadHandler = () => {
+    console.log(selectedImage.profileImage);
     var formData = new FormData();
 
     formData.append("file", selectedImage.profileImage);
-    var options = { content: formData };
-    axios
-      .post(
-        "https://ng-angular-b270a-default-rtdb.firebaseio.com/image.json",
-        options
-      )
+    API.post("get-image", formData, {
+      headers: {
+        "Content-type": "multipart/form-data",
+      },
+    })
       .then((response) => {
-        console.log(response);
-      });
-    // console.log(selectedImage);
+        console.log(response.data);
+      })
+      .catch();
+  };
+
+  const onSubmitHandler = (event) => {
+    event.preventDefault();
+    setAlert("");
+    const data = {
+      user_id: 1,
+      phone: phoneNumber,
+      last_name: lastName,
+      about_me: aboutMe,
+      city: city,
+      country: country,
+      postal_code: zip,
+      job_title: jobTitle,
+    };
+    API.post("users/update-a-user", data)
+      .then((response) => {
+        if (response.data.http_status === 200) {
+          setAlert(response.data.data.msg);
+        }
+      })
+      .catch();
   };
   return (
     <div>
       <GridContainer>
         <GridItem xs={12} sm={12} md={8}>
           <Card>
-            <CardHeader color="primary">
-              <h4 className={classes.cardTitleWhite}>Edit Profile</h4>
-              <p className={classes.cardCategoryWhite}>Complete your profile</p>
-            </CardHeader>
-            <CardBody>
-              <GridContainer>
-                <GridItem xs={12} sm={12} md={5}>
-                  <input type="file" onChange={fileSelectedHandler} />
-                  <button onClick={fileUploadHandler}>Upload</button>
-                  <div>
-                    <img src={selectedImage.src} />
-                    <img
-                      src={
-                        "http://localhost:3000/8218beaf-336a-4a47-8ada-effedc8f0844"
-                      }
+            <Form onSubmit={onSubmitHandler}>
+              <CardHeader color="primary">
+                <h4 className={classes.cardTitleWhite}>Edit Profile</h4>
+                <p className={classes.cardCategoryWhite}>
+                  Complete your profile
+                </p>
+              </CardHeader>
+              <CardBody>
+                {alert && <SnackbarContent message={alert} color="success" />}
+                <GridContainer>
+                  <GridItem xs={12} sm={12} md={6}>
+                    <FormInput
+                      id="username"
+                      type="text"
+                      labelName="User Name"
+                      readOnly="true"
+                      value={username}
+                      change={onUserNameChanged}
                     />
-                  </div>
-                </GridItem>
-                <GridItem xs={12} sm={12} md={3}>
-                  <CustomInput
-                    labelText="Username"
-                    id="username"
-                    formControlProps={{
-                      fullWidth: true,
-                    }}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={4}>
-                  <CustomInput
-                    labelText="Email address"
-                    id="email-address"
-                    formControlProps={{
-                      fullWidth: true,
-                    }}
-                  />
-                </GridItem>
-              </GridContainer>
-              <GridContainer>
-                <GridItem xs={12} sm={12} md={6}>
-                  <CustomInput
-                    labelText="First Name"
-                    id="first-name"
-                    formControlProps={{
-                      fullWidth: true,
-                    }}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={6}>
-                  <CustomInput
-                    labelText="Last Name"
-                    id="last-name"
-                    formControlProps={{
-                      fullWidth: true,
-                    }}
-                  />
-                </GridItem>
-              </GridContainer>
-              <GridContainer>
-                <GridItem xs={12} sm={12} md={4}>
-                  <CustomInput
-                    labelText="City"
-                    id="city"
-                    formControlProps={{
-                      fullWidth: true,
-                    }}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={4}>
-                  <CustomInput
-                    labelText="Country"
-                    id="country"
-                    formControlProps={{
-                      fullWidth: true,
-                    }}
-                  />
-                </GridItem>
-                <GridItem xs={12} sm={12} md={4}>
-                  <CustomInput
-                    labelText="Postal Code"
-                    id="postal-code"
-                    formControlProps={{
-                      fullWidth: true,
-                    }}
-                  />
-                </GridItem>
-              </GridContainer>
-              <GridContainer>
-                <GridItem xs={12} sm={12} md={12}>
-                  <InputLabel style={{ color: "#AAAAAA" }}>About me</InputLabel>
-                  <CustomInput
-                    labelText="Lamborghini Mercy, Your chick she so thirsty, I'm in that two seat Lambo."
-                    id="about-me"
-                    formControlProps={{
-                      fullWidth: true,
-                    }}
-                    inputProps={{
-                      multiline: true,
-                      rows: 5,
-                    }}
-                  />
-                </GridItem>
-              </GridContainer>
-            </CardBody>
-            <CardFooter>
-              <Button color="primary">Update Profile</Button>
-            </CardFooter>
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={6}>
+                    <FormInput
+                      id="userEmail"
+                      type="email"
+                      labelName="Email Address"
+                      readOnly="true"
+                      value={email}
+                      change={onEmailChanged}
+                    />
+                  </GridItem>
+                </GridContainer>
+                <GridContainer>
+                  <GridItem xs={12} sm={12} md={4}>
+                    <FormInput
+                      id="firstName"
+                      type="text"
+                      labelName="First Name"
+                      readOnly=""
+                      value={firstName}
+                      change={onFNameChanged}
+                    />
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={4}>
+                    <FormInput
+                      id="lastName"
+                      type="text"
+                      labelName="Last Name"
+                      readOnly=""
+                      value={!lastName ? "" : lastName}
+                      change={onLNameChanged}
+                    />
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={4}>
+                    <FormInput
+                      id="phone"
+                      type="text"
+                      labelName="Phone Number"
+                      readOnly=""
+                      value={!phoneNumber ? "" : phoneNumber}
+                      change={onPhoneChanged}
+                    />
+                  </GridItem>
+                </GridContainer>
+                <GridContainer>
+                  <GridItem xs={12} sm={12} md={4}>
+                    <FormInput
+                      id="userCity"
+                      type="text"
+                      labelName="City"
+                      readOnly=""
+                      value={!city ? "" : city}
+                      change={onCityChanged}
+                    />
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={4}>
+                    <FormInput
+                      id="userCountry"
+                      type="text"
+                      labelName="Country"
+                      readOnly=""
+                      value={!country ? "" : country}
+                      change={onCountryChanged}
+                    />
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={4}>
+                    <FormInput
+                      id="userPostCode"
+                      type="text"
+                      labelName="Postal Code"
+                      readOnly=""
+                      value={!zip ? "" : zip}
+                      change={onZipChanged}
+                    />
+                  </GridItem>
+                </GridContainer>{" "}
+                <GridContainer>
+                  <GridItem xs={12} sm={12} md={6}>
+                    <FormInput
+                      id="jobTitle"
+                      type="text"
+                      labelName="Job Title"
+                      readOnly=""
+                      value={!jobTitle ? "" : jobTitle}
+                      change={onJobChanged}
+                    />
+                  </GridItem>
+                  <GridItem xs={12} sm={12} md={6}>
+                    <FormInput
+                      id="userRole"
+                      type="text"
+                      labelName="User Role"
+                      readOnly="true"
+                      value={userRole}
+                      change={onRoleChanged}
+                    />
+                  </GridItem>
+                </GridContainer>
+                <GridContainer>
+                  <GridItem xs={12} sm={9} md={8} className="">
+                    <FormInput
+                      id="userImage"
+                      type="file"
+                      labelName="Change Profile"
+                      readOnly=""
+                      change={fileSelectedHandler}
+                    />
+                  </GridItem>
+                  <GridItem xs={6} sm={3} md={4} lg={3} xl={2} className="">
+                    <img
+                      src={selectedImage.src}
+                      alt="..."
+                      className={userClass["user-image"]}
+                    />
+                  </GridItem>
+                </GridContainer>
+                <GridContainer>
+                  <GridItem xs={12} sm={12} md={12}>
+                    <FormTextarea
+                      id="aboutUSer"
+                      type="textarea"
+                      labelName="About Yourself"
+                      readOnly=""
+                      rows="3"
+                      value={!aboutMe ? "" : aboutMe}
+                      change={onAbountMeChanged}
+                    ></FormTextarea>
+                  </GridItem>
+                </GridContainer>
+              </CardBody>
+              <CardFooter>
+                <Button variant="primary" type="submit">
+                  Update Profile
+                </Button>
+              </CardFooter>
+            </Form>
           </Card>
         </GridItem>
         <GridItem xs={12} sm={12} md={4}>
           <Card profile>
             <CardAvatar profile>
               <label>
-                <img src={avatar} alt="..." />
+                <img src={selectedImage.src} alt="..." />
               </label>
             </CardAvatar>
             <CardBody profile>
-              <h6 className={classes.cardCategory}>CEO / CO-FOUNDER</h6>
-              <h4 className={classes.cardTitle}>Alec Thompson</h4>
+              <h6 className={classes.cardCategory}>
+                {jobTitle ? jobTitle : "JOB TITLE"}
+              </h6>
+              <h4 className={classes.cardTitle}>{`${firstName} ${
+                lastName ? lastName : ""
+              }`}</h4>
               <p className={classes.description}>
-                Don{"'"}t be scared of the truth because we need to restart the
-                human foundation in truth And I love you like Kanye loves Kanye
-                I love Rick Owens’ bed design but the back is...
+                {aboutMe
+                  ? aboutMe
+                  : "please describe about yourself briefly, including your job description, How long have you been working here and your hobbies too"}
               </p>
-              <Button color="primary" round>
-                Follow
-              </Button>
+              <Button color="primary">Follow</Button>
             </CardBody>
           </Card>
         </GridItem>

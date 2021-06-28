@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,6 +16,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+Route::post('/get-image', [TestController::class, 'store']);
+
+
+Route::get('/image', function () {
+    return view('image');
 });
 
 Auth::routes();

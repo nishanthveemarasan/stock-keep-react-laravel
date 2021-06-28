@@ -1,5 +1,7 @@
+import React, { useEffect } from "react";
 import classes from "./Login.module.css";
 import Card from "components/Card/Card.js";
+import { useSelector, useDispatch } from "react-redux";
 import CardHeader from "components/Card/CardHeader.js";
 // import Button from "components/CustomButtons/Button";
 import CardBody from "components/Card/CardBody.js";
@@ -10,9 +12,25 @@ import Form from "react-bootstrap/Form";
 import Button from "components/CustomButtons/Button";
 import { NavLink } from "react-router-dom";
 import { Home } from "@material-ui/icons";
-import React from "react";
 import MainNavigation from "../MainNavigation";
+import SnackbarContent from "components/Snackbar/SnackbarContent.js";
+import { registerStoreAction } from "store";
 const Login = () => {
+  const mapStateToProps = (state) => {
+    return {
+      isRegisterd: state.registerStore.isRegisterd,
+    };
+  };
+  const state = useSelector(mapStateToProps);
+  useEffect(() => {
+    if (state.isRegisterd) {
+      setTimeout(() => {
+        dispatch(registerStoreAction.notRegistered());
+      }, 2000);
+    }
+  }, [state.isRegisterd]);
+  const dispatch = useDispatch();
+
   return (
     <React.Fragment>
       <MainNavigation />
@@ -28,6 +46,12 @@ const Login = () => {
                 </p>
               </CardHeader>
               <CardBody>
+                {state.isRegisterd && (
+                  <SnackbarContent
+                    message="Account is created Successfully!!!"
+                    color="success"
+                  />
+                )}
                 <Form>
                   <FormInput
                     id="username"

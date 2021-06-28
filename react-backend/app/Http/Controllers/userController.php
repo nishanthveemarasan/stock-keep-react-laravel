@@ -83,5 +83,71 @@ class userController extends Controller
             return $this->apiResponseService->failed($e->getMessage(), 500);
         }
     }
-    
+
+    public function changeProfilePicture(Request $request)
+    {
+
+        try {
+            $data = $request->all();
+            $disableUser = $this->userService->disableUser($data);
+            $response =  $this->apiResponseService->success(200, $disableUser);
+            return $response;
+        } catch (Throwable $e) {
+            return $this->apiResponseService->failed($e->getMessage(), 500);
+        }
+    }
+
+    public function updateUser(Request $request)
+    {
+        try {
+            $data = $request->all();
+            $editUserRole = $this->userService->updateUser($data);
+            $response =  $this->apiResponseService->success(200, $editUserRole);
+            return $response;
+        } catch (Throwable $e) {
+            return $this->apiResponseService->failed($e->getMessage(), 500);
+        }
+    }
+    public function checkUsername(Request $request)
+    {
+        try {
+            $data = $request->all();
+            $editUserRole = $this->userService->checkUsername($data);
+            $response =  $this->apiResponseService->success(200, $editUserRole);
+            return $response;
+        } catch (Throwable $e) {
+            return $this->apiResponseService->failed($e->getMessage(), 500);
+        }
+    }
+    public function create(Request $request)
+    {
+        try {
+            $data = $request->all();
+            $editUserRole = $this->userService->create($data);
+            $response =  $this->apiResponseService->success(200, $editUserRole);
+            return $response;
+        } catch (Throwable $e) {
+            return $this->apiResponseService->failed($e->getMessage(), 500);
+        }
+    }
+
+    public function updateProfileImage(Request $request)
+    {
+        try {
+            $imagePath = $request->file('file');
+            $imageName = $imagePath->getClientOriginalName();
+            $userId = $request['userId'];
+            $path = $request->file('file')->storeAs('profileImage', $imageName, 'public');
+            $imageUrl = "http://relaxreact.test/react-backend/storage/app/public/" . $path;
+            $data = array(
+                'userId' => $userId,
+                'imageUrl' => $imageUrl
+            );
+            $editUserRole = $this->userService->updateProfileImage($data, $path);
+            $response =  $this->apiResponseService->success(200, $editUserRole);
+            return $response;
+        } catch (Throwable $e) {
+            return $this->apiResponseService->failed($e->getMessage(), 500);
+        }
+    }
 }

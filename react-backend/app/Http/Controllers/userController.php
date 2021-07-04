@@ -6,6 +6,7 @@ use Throwable;
 use App\Service\UserService;
 use Illuminate\Http\Request;
 use App\Service\APIResponseService;
+use Illuminate\Support\Facades\Auth;
 
 class userController extends Controller
 {
@@ -149,5 +150,39 @@ class userController extends Controller
         } catch (Throwable $e) {
             return $this->apiResponseService->failed($e->getMessage(), 500);
         }
+    }
+
+    public function login(Request $request)
+    {
+        try {
+            $username = $request['userName'];
+            $password = $request['password'];
+            if (Auth::attempt([
+                'username' => $username,
+                'password' => $password
+            ])) {
+                $user = Auth::user();
+                $resArr['token'] = $user->createToken('api-application')->accessToken;
+                $resArr['name'] = $user->name;
+                $resArr['id'] = $user->id;
+                return response()->json($resArr, 200);
+            } else {
+                return response()->json(['error' => "unAuthorised Access"], 203);
+            }
+        } catch (Throwable $e) {
+        }
+    }
+
+    public function logout(Request $request)
+    {
+        $token = $request->user()->token();
+        $token->revoke();
+        $response = ['message' => 'You have been successfully logged out!'];
+        return response($response, 200);
+    }
+
+    public function error()
+    {
+        return $this->apiResponseService->failed(array('error' => "unAuthorised Access"), 201);
     }
 }

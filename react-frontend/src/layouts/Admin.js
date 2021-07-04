@@ -18,7 +18,10 @@ import styles from "assets/jss/material-dashboard-react/layouts/adminStyle.js";
 import bgImage from "assets/img/sidebar-2.jpg";
 import logo from "assets/img/reactlogo.png";
 import Home from "views/Home/Home";
-
+import axios from "axios";
+axios.interceptors.request.use((request) => {
+  console.log(request);
+});
 let ps;
 
 const switchRoutes = (

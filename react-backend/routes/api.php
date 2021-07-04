@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\commentController;
 use App\Http\Controllers\DashBoardController;
 use App\Http\Controllers\exportController;
@@ -31,6 +32,8 @@ Route::middleware(['cors'])->group(function () {
     Route::post('/get-image', [TestController::class, 'csv']);
 });
 
+
+
 Route::get('email', [MailController::class, 'sendMail']);
 Route::get('test', [TestController::class, 'test']);
 Route::get('get-dashboard-data', [DashBoardController::class, 'getDashBoardData']);
@@ -53,19 +56,23 @@ Route::prefix('order')->group(function () {
     Route::get('get-latest-order-id', [orderController::class, 'getlatestId']);
     Route::post('create', [orderController::class, 'create']);
 });
-
-Route::prefix('users')->group(function () {
-    Route::get('get-logs', [userController::class, 'getLogs']);
-    Route::get('get-users', [userController::class, 'getUsers']);
-    Route::get('get-user-logs/{id}', [userController::class, 'getUserLogs']);
-    Route::post('edit-user-role', [userController::class, 'editUserRole']);
-    Route::post('disable-a-user', [userController::class, 'disableUser']);
-    Route::get('get-a-user/{id}', [userController::class, 'getUser']);
-    Route::post('update-a-user', [userController::class, 'updateUser']);
-    Route::post('check-username', [userController::class, 'checkUsername']);
-    Route::post('create', [userController::class, 'create']);
-    Route::post('update-prifile-image', [userController::class, 'updateProfileImage']);
+Route::group(['middleware' => 'auth:api'], function () {
+    Route::prefix('users')->group(function () {
+        Route::get('get-logs', [userController::class, 'getLogs']);
+        Route::get('get-users', [userController::class, 'getUsers']);
+        Route::get('get-user-logs/{id}', [userController::class, 'getUserLogs']);
+        Route::post('edit-user-role', [userController::class, 'editUserRole']);
+        Route::post('disable-a-user', [userController::class, 'disableUser']);
+        Route::get('get-a-user/{id}', [userController::class, 'getUser']);
+        Route::post('update-a-user', [userController::class, 'updateUser']);
+        Route::post('check-username', [userController::class, 'checkUsername']);
+        Route::post('create', [userController::class, 'create']);
+        Route::post('update-prifile-image', [userController::class, 'updateProfileImage']);
+        Route::post('logout', [userController::class, 'logout']);
+    });
 });
+
+Route::get('error' , [userController::class , 'error'])->name('error');
 
 Route::prefix('posts')->group(function () {
     Route::get('get-posts', [postController::class, 'getAllPosts']);
@@ -85,4 +92,8 @@ Route::prefix('comments')->group(function () {
 Route::prefix('likes')->group(function () {
     Route::post('is-post-liked', [LikeController::class, 'isPostLiked']);
     Route::post('update-user-like', [LikeController::class, 'updateLikes']);
+});
+
+Route::prefix('user')->group(function () {
+    Route::post('login', [userController::class, 'login']);
 });

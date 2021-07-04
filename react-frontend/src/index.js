@@ -31,7 +31,10 @@ import Login from "views/Home/content/Login";
 import Register from "views/Home/content/Register";
 import Posts from "views/Home/content/Posts";
 import Products from "views/Home/content/Products";
-
+import axios from "axios";
+axios.interceptors.request.use((request) => {
+  console.log(request);
+});
 ReactDOM.render(
   <Provider store={store}>
     <BrowserRouter>
@@ -43,7 +46,7 @@ ReactDOM.render(
         <Route path="/posts" component={Posts} />
         <Route path="/products" component={Products} />
         <Route path="/register" component={Register} />
-        <Redirect from="/" to="/admin/dashboard" />
+        <Redirect from="/" to="/home" />
       </Switch>
     </BrowserRouter>
   </Provider>,
